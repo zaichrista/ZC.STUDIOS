@@ -1,0 +1,10 @@
+{
+  "name": "zc-studios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ZC Studios website: static, no dependencies.",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node build.js"
+  }
+}
