@@ -132,54 +132,22 @@
     kick();
   }
 
-  /* input: wheel / trackpad */
-  // trackpad inertia keeps firing wheel events for ~1s, so a "new gesture" is a pause, a direction flip,
-  // or a delta that grows again (inertia only decays). Nothing is ever locked out for longer than the glide.
-  let lastWheel = 0, lastAbs = 0, lastDir = 0, armed = true;
-  addEventListener('wheel', e => {
-    if (e.ctrlKey) return;                                   // pinch-zoom
-    e.preventDefault();
-    const now = performance.now(), gap = now - lastWheel, abs = Math.abs(e.deltaY), dir = Math.sign(e.deltaY);
-    const fresh = gap > 60 || dir !== lastDir || abs > lastAbs * 1.4 + 2;
-    lastWheel = now; lastAbs = abs; lastDir = dir;
-    if (fresh) armed = true;
-    if (!armed || abs < 4) return;
-    if (busy && dir === lastGo) return;                      // same-direction input while gliding: ignore
-    armed = false; lastGo = dir; busy = false;
-    go(idx + dir);
-  }, { passive: false });
-  let lastGo = 0;
-
-  /* input: touch swipe */
-  let ty = null;
-  addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
-  addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-  addEventListener('touchend', e => {
-    if (ty == null) return;
-    const dy = ty - e.changedTouches[0].clientY; ty = null;
-    if (Math.abs(dy) > 45) go(idx + (dy > 0 ? 1 : -1));
+  /* normal scrolling: the scene is whichever screen you're on; entrances fire as you arrive */
+  addEventListener('scroll', () => {
+    const i = clamp(Math.round(scrollY / innerHeight), 0, scenes.length - 1);
+    if (i !== idx) { idx = i; setNav(i); enter(i); }
+    kick();
   }, { passive: true });
 
-  /* input: keyboard */
-  addEventListener('keydown', e => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-    const k = e.key;
-    if (['ArrowDown', 'PageDown'].includes(k) || (k === ' ' && !e.shiftKey)) { e.preventDefault(); go(idx + 1); }
-    else if (['ArrowUp', 'PageUp'].includes(k) || (k === ' ' && e.shiftKey)) { e.preventDefault(); go(idx - 1); }
-    else if (k === 'Home') { e.preventDefault(); go(0); }
-    else if (k === 'End') { e.preventDefault(); go(scenes.length - 1); }
-  });
-
-  /* nav links and pills jump to their scene */
+  /* pills jump to their scene */
   $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
     const i = order.indexOf(a.getAttribute('href').slice(1));
     if (i < 0) return;
     e.preventDefault();
-    if (i === idx) return;
-    busy = false; go(i);
+    scrollTo({ top: TOP(i), behavior: reduce ? 'auto' : 'smooth' });
   }));
 
-  addEventListener('resize', () => { fitMark(); go(idx, true); });
+  addEventListener('resize', () => { fitMark(); draw(); });
 
   /* scene entrances: replay every time you land */
   const io = new IntersectionObserver(es => es.forEach(e => {
