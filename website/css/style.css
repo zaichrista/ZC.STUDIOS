@@ -189,6 +189,17 @@
   #talk .mail:hover::after { opacity: 1; transform: scaleX(1.04); }
   #talk .copy { position: absolute; right: var(--gut); bottom: 2.6vh; font-weight: 800; font-size: clamp(14px, 1.3vw, 24px); letter-spacing: -.03em; }
 
+  /* seo additions: visually hidden h1, case link, crawlable site links */
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+  #work .acts { display: flex; gap: 1.6em; align-items: baseline; position: sticky; bottom: 0; }
+  #work .full { font-weight: 700; font-size: clamp(12px, 1vw, 18px); letter-spacing: -.02em; text-decoration: underline; text-underline-offset: .25em; }
+  #work .acts .close { position: static; }
+  #what a.row { color: inherit; }
+  #talk .sitelinks { position: absolute; left: var(--gut); bottom: 2.6vh; max-width: 62vw; text-align: left; font-size: clamp(12px, 1vw, 18px);
+    font-weight: 300; letter-spacing: -.01em; line-height: 1.5; opacity: .75; }
+  #talk .sitelinks a { display: inline-block; margin-right: 1.1em; }
+  #talk .sitelinks a:hover { opacity: 1; text-decoration: underline; text-underline-offset: .2em; }
+
   /* mobile */
   @media (max-width: 720px) {
     .nav { grid-template-columns: auto 1fr auto; gap: 12px; padding: 18px var(--gut); }
@@ -217,6 +228,8 @@
     #about h2 { top: 13vh; font-size: 13vw; }
     #about .by { top: 50%; translate: 0 -50%; font-size: 9vw; }
     #talk .br { display: none; }
+    #talk .sitelinks { max-width: calc(100vw - 2 * var(--gut)); bottom: 7vh; }
+    #talk .copy { bottom: 2vh; }
     #about .bio { width: calc(100vw - 2 * var(--gut)); right: var(--gut); font-size: 16px; bottom: 5vh; }
   }
   @media (prefers-reduced-motion: reduce) {

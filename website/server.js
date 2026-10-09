@@ -8,6 +8,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=
 
 http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
+  p = p.replace(/^\/ZC\.STUDIOS(?=\/|$)/, '') || '/';   // live site is served under /ZC.STUDIOS/
   if (p.endsWith('/')) p += 'index.html';
   const file = path.join(ROOT, path.normalize(p));
   if (!file.startsWith(ROOT) || /(^|[\\/])(server\.js|build\.js|package\.json|_archive)([\\/]|$)/.test(path.relative(ROOT, file))) {
@@ -18,4 +19,4 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': TYPES[path.extname(file).toLowerCase()] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
     res.end(data);
   });
-}).listen(PORT, () => console.log(`ZC Studios running at http://localhost:${PORT}`));
+}).listen(PORT, () => console.log(`ZC Studios running at http://localhost:${PORT}/ZC.STUDIOS/`));

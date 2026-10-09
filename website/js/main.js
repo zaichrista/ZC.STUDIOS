@@ -193,13 +193,13 @@
   /* ---- cases: float around the headline, click to open the write-up ---- */
   // case-study copy lives in data/cases.json (edit it there)
   let CASES = {};
-  fetch('data/cases.json').then(r => r.json()).then(d => { CASES = d; }).catch(() => {});
+  fetch('/ZC.STUDIOS/data/cases.json').then(r => r.json()).then(d => { CASES = d; }).catch(() => {});
   const work = tracks.work, copy = $('#copy'), cards = $$('#work .case');
   function openCase(k) {
     const c = CASES[k];
     if (!c) return;
     cards.forEach(el => el.classList.toggle('sel', el.dataset.case === k));
-    copy.innerHTML = `<h3>${c.name}</h3><p class="kind">${c.kind}</p><dl>${c.rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><button class="close" type="button">← back</button>`;
+    copy.innerHTML = `<h3>${c.name}</h3><p class="kind">${c.kind}</p><dl>${c.rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><p class="acts"><a class="full" href="${cards.find(el => el.dataset.case === k).href}">read the full case</a><button class="close" type="button">← back</button></p>`;
     $('.close', copy).addEventListener('click', closeCase);
     work.dataset.sel = k;
     work.classList.add('open');

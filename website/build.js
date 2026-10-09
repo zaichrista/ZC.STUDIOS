@@ -1,8 +1,10 @@
 // Copies only what the live site needs into dist/  ->  upload / deploy THAT folder.
-// Leaves out mockups, the archive and dev files.  Run:  npm run build
+// Leaves out mockups, assets/ and dev files.  Run:  npm run build
 const fs = require('fs'), path = require('path');
 const ROOT = __dirname, OUT = path.join(ROOT, 'dist');
-const INCLUDE = ['index.html', 'css', 'js', 'data', 'assets/images/cases'];   // add 'assets/fonts', 'assets/video' etc. here if you add them
+const INCLUDE = ['index.html', '404.html', 'robots.txt', 'sitemap.xml', 'llms.txt', 'favicon.svg', 'css', 'js', 'data', 'og', 'cases',
+  'about', 'services', 'work', 'contact', 'privacy', 'brand-identity', 'website-design', 'menu-and-print-design',
+  'venue-diagnosis', 'monthly-partnership', 'founding-clients'];
 
 let files = 0, bytes = 0;
 function copy(src, dest) {
