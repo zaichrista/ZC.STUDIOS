@@ -45,7 +45,7 @@
 
   /* ---- scenes: one gesture = one scene ---- */
   const tracks = { hero: $('#hero'), big: $('#big'), what: $('#what'), work: $('#work'), about: $('#about'), talk: $('#talk') };
-  const order = ['hero', 'big', 'what', 'work', 'about', 'talk'];
+  const order = ['hero', 'big', 'what', 'talk'];   // 'work' and 'about' scenes are hidden on the home page (see .track.off); add them back here to restore
   const scenes = order.map(k => tracks[k]);
   const rail = $('#rail');
   const casesEl = $('#cases'), navEl = $('.nav');
@@ -64,7 +64,7 @@
     // nav + progress rail take the opposite colour of whichever scene sits under them
     const under = scenes.findLast(t => t.offsetTop <= y + 30) || scenes[0], navCol = under.classList.contains('dark') ? 'var(--paper)' : 'var(--ink)';
     navEl.style.color = navCol; rail.style.background = navCol;
-    rail.style.transform = `scaleX(${y / (scenes[5].offsetTop || 1)})`;
+    rail.style.transform = `scaleX(${y / (scenes[scenes.length - 1].offsetTop || 1)})`;
 
     // hero: wordmark rises and tagline drifts as you leave
     const h = clamp(y / vh);

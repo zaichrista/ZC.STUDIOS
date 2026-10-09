@@ -36,6 +36,7 @@
           transform-origin: left; transform: scaleX(0); z-index: 60; }
 
   /* ---------- scenes ---------- */
+  .track[hidden], .track.off { display: none; }
   .track { position: relative; height: 100vh; height: 100svh; }
   .stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
   .dark  { background: var(--ink); color: var(--paper); }
