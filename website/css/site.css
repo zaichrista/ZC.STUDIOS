@@ -47,6 +47,15 @@ img { max-width: 100%; display: block; }
 }
 .nav ul a:hover::after, .nav .enq:hover::after, .nav a[aria-current="page"]::after { transform: scaleX(1); transform-origin: left; }
 
+/* ---------- scenes (desktop): each section is one full screen, scrolled one gesture at a time ---------- */
+html.scenes { height: 100%; }
+html.scenes { overflow: hidden; overscroll-behavior: none; }
+.sec, .phero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
+.sec > .wrap, .phero > .wrap { width: 100%; }
+.sec[style*="padding-top:0"] { padding-top: clamp(72px, 12vh, 160px) !important; }
+.rail { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 60; transform-origin: left; transform: scaleX(0); pointer-events: none; mix-blend-mode: normal; }
+@media (hover: none), (pointer: coarse) { html { scroll-snap-type: y proximity; } .sec, .phero, .footer { scroll-snap-align: start; } }
+
 /* ---------- scaffolding ---------- */
 .sec { padding: clamp(72px, 12vh, 160px) var(--gut); }
 .dark  { background: var(--ink); color: var(--paper); }
