@@ -118,6 +118,9 @@
     if (instant || reduce || from === to) { scrollTo(0, to); kick(); return; }
     busy = scrolling = true;
     const dur = 1100, t0 = performance.now();
+    // failsafe: if frames stop (background tab, throttling) never leave scrolling locked
+    clearTimeout(go.guard);
+    go.guard = setTimeout(() => { if (busy) { scrollTo(0, to); scrolling = busy = false; kick(); } }, dur + 500);
     (function step(now) {
       const p = clamp((now - t0) / dur);
       scrollTo(0, from + (to - from) * ease.inOut(p));
@@ -131,8 +134,8 @@
   /* input: wheel / trackpad */
   let lastWheel = 0, armed = true;
   addEventListener('wheel', e => {
-    e.preventDefault();
     if (e.ctrlKey) return;                                   // pinch-zoom
+    e.preventDefault();
     const now = performance.now(), gap = now - lastWheel;
     lastWheel = now;
     if (gap > 90 && !busy) armed = true;                     // a pause (after landing) means a new gesture
