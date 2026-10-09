@@ -116,33 +116,39 @@
     idx = i; setNav(i);
     if (moved) enter(i);
     if (instant || reduce || from === to) { scrollTo(0, to); kick(); return; }
-    busy = scrolling = true;
-    const dur = 1100, t0 = performance.now();
+    busy = scrolling = true; const my = go.id = (go.id || 0) + 1;
+    const dur = 800, t0 = performance.now();
     // failsafe: if frames stop (background tab, throttling) never leave scrolling locked
     clearTimeout(go.guard);
-    go.guard = setTimeout(() => { if (busy) { scrollTo(0, to); scrolling = busy = false; kick(); } }, dur + 500);
+    go.guard = setTimeout(() => { if (busy) { scrollTo(0, to); scrolling = busy = false; kick(); } }, dur + 400);
     (function step(now) {
+      if (go.id !== my) return;                              // superseded by a newer glide
       const p = clamp((now - t0) / dur);
       scrollTo(0, from + (to - from) * ease.inOut(p));
       if (p < 1) return requestAnimationFrame(step);
-      scrolling = false; setTimeout(() => { busy = false; }, 120);
+      scrolling = false; busy = false;
       kick();
     })(t0);
     kick();
   }
 
   /* input: wheel / trackpad */
-  let lastWheel = 0, armed = true;
+  // trackpad inertia keeps firing wheel events for ~1s, so a "new gesture" is a pause, a direction flip,
+  // or a delta that grows again (inertia only decays). Nothing is ever locked out for longer than the glide.
+  let lastWheel = 0, lastAbs = 0, lastDir = 0, armed = true;
   addEventListener('wheel', e => {
     if (e.ctrlKey) return;                                   // pinch-zoom
     e.preventDefault();
-    const now = performance.now(), gap = now - lastWheel;
-    lastWheel = now;
-    if (gap > 90 && !busy) armed = true;                     // a pause (after landing) means a new gesture
-    if (busy || !armed || Math.abs(e.deltaY) < 4) return;    // ignore the tail of the last one
-    armed = false;
-    go(idx + (e.deltaY > 0 ? 1 : -1));
+    const now = performance.now(), gap = now - lastWheel, abs = Math.abs(e.deltaY), dir = Math.sign(e.deltaY);
+    const fresh = gap > 60 || dir !== lastDir || abs > lastAbs * 1.4 + 2;
+    lastWheel = now; lastAbs = abs; lastDir = dir;
+    if (fresh) armed = true;
+    if (!armed || abs < 4) return;
+    if (busy && dir === lastGo) return;                      // same-direction input while gliding: ignore
+    armed = false; lastGo = dir; busy = false;
+    go(idx + dir);
   }, { passive: false });
+  let lastGo = 0;
 
   /* input: touch swipe */
   let ty = null;
