@@ -6,4 +6,4 @@
 4. Replace og/og-default.png (placeholder) with a real 1200x630 image.
 5. Search Console: add the property, submit /ZC.STUDIOS/sitemap.xml, request indexing of the home page.
 6. robots.txt only works at a host root. On github.io project paths it is ignored; it starts working once you use a custom domain (then update BASE/PATH, canonicals and sitemap).
-7. Claims to confirm: "from £400" diagnosis, info@zairachrista.com, West London focus.
+7. Claims to confirm: "from £400" diagnosis, zairachristastudios@gmail.com, West London focus.

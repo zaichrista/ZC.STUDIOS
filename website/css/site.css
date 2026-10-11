@@ -221,3 +221,17 @@ a.row:hover h3, a.row:focus-visible h3 { transform: translateX(1.2vw); }
   *, *::before, *::after { transition-duration: .01ms !important; animation: none !important; scroll-behavior: auto !important; }
   .js .rv { opacity: 1; transform: none; }
 }
+
+/* ---------- enquiry form ---------- */
+.enq { display: grid; gap: 1.1em; max-width: 40em; margin-bottom: 3em; }
+.enq label { display: grid; gap: .45em; font-size: .85em; }
+.enq input, .enq select, .enq textarea {
+  font: inherit; font-size: 1.15em; color: inherit; background: transparent; border: 0;
+  border-bottom: 1px solid var(--hair-light); border-radius: 0; padding: .45em 0; width: 100%;
+}
+.enq textarea { border: 1px solid var(--hair-light); padding: .6em; resize: vertical; }
+.enq input:focus, .enq select:focus, .enq textarea:focus { outline: 2px solid var(--ink); outline-offset: 2px; }
+.enq .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.enq button { justify-self: start; cursor: pointer; border: 0; font-family: inherit; }
+.enq button[disabled] { opacity: .5; cursor: wait; }
+.enq-status { min-height: 1.4em; font-size: .95em; }
