@@ -48,7 +48,7 @@ img { max-width: 100%; display: block; }
 .nav ul a:hover::after, .nav .enq:hover::after, .nav a[aria-current="page"]::after { transform: scaleX(1); transform-origin: left; }
 
 /* ---------- scaffolding ---------- */
-.sec { padding: clamp(72px, 12vh, 160px) var(--gut); }
+.sec { padding: clamp(72px, 12vh, 160px) var(--gut); display: flow-root; } /* flow-root: child margins stay inside the section background */
 .dark  { background: var(--ink); color: var(--paper); }
 .light { background: var(--paper); color: var(--ink); }
 .wrap { max-width: 1760px; margin: 0 auto; }
