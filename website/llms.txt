@@ -3,15 +3,15 @@
 > Culture-led brand identity, website design and menu design for restaurants, bars and cafés in London. New studio, taking a small number of founding venues.
 
 ## Services
-- [Website design](https://zaichrista.github.io/ZC.STUDIOS/website-design/): restaurant websites built to be found and booked from.
-- [Brand identity](https://zaichrista.github.io/ZC.STUDIOS/brand-identity/): logo, colour, type and voice for London venues.
-- [Menu and print design](https://zaichrista.github.io/ZC.STUDIOS/menu-and-print-design/)
-- [Monthly and seasonal partnership](https://zaichrista.github.io/ZC.STUDIOS/monthly-partnership/)
-- [Venue diagnosis](https://zaichrista.github.io/ZC.STUDIOS/venue-diagnosis/): brand audit, from £400.
+- [Website design](https://zairachristastudios.com/website-design/): restaurant websites built to be found and booked from.
+- [Brand identity](https://zairachristastudios.com/brand-identity/): logo, colour, type and voice for London venues.
+- [Menu and print design](https://zairachristastudios.com/menu-and-print-design/)
+- [Monthly and seasonal partnership](https://zairachristastudios.com/monthly-partnership/)
+- [Venue diagnosis](https://zairachristastudios.com/venue-diagnosis/): brand audit, from £400.
 
 ## Work
-- [The Reach Riverside](https://zaichrista.github.io/ZC.STUDIOS/work/the-reach-riverside/)
-- [Mandaloun Westfield](https://zaichrista.github.io/ZC.STUDIOS/work/mandaloun-westfield/)
+- [The Reach Riverside](https://zairachristastudios.com/work/the-reach-riverside/)
+- [Mandaloun Westfield](https://zairachristastudios.com/work/mandaloun-westfield/)
 
 ## Contact
-- [Contact](https://zaichrista.github.io/ZC.STUDIOS/contact/): zairachristastudios@gmail.com
+- [Contact](https://zairachristastudios.com/contact/): zairachristastudios@gmail.com

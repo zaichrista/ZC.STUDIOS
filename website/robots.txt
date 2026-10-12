@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://zaichrista.github.io/ZC.STUDIOS/sitemap.xml
+Sitemap: https://zairachristastudios.com/sitemap.xml

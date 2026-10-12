@@ -170,7 +170,7 @@
   /* ---- cases: float around the headline, click to open the write-up ---- */
   // case-study copy lives in data/cases.json (edit it there)
   let CASES = {};
-  fetch('/ZC.STUDIOS/data/cases.json').then(r => r.json()).then(d => { CASES = d; }).catch(() => {});
+  fetch('/data/cases.json').then(r => r.json()).then(d => { CASES = d; }).catch(() => {});
   const work = tracks.work, copy = $('#copy'), cards = $$('#work .case');
   function openCase(k) {
     const c = CASES[k];
