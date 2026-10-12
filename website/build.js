@@ -2,7 +2,7 @@
 // Leaves out mockups, assets/ and dev files.  Run:  npm run build
 const fs = require('fs'), path = require('path');
 const ROOT = __dirname, OUT = path.join(ROOT, 'dist');
-const INCLUDE = ['index.html', '404.html', 'robots.txt', 'sitemap.xml', 'llms.txt', 'favicon.svg', 'css', 'js', 'data', 'og', 'cases',
+const INCLUDE = ['index.html', '404.html', 'robots.txt', 'sitemap.xml', 'llms.txt', 'favicon.svg', 'favicon.ico', 'favicon-32.png', 'apple-touch-icon.png', 'favicon-512.png', 'css', 'js', 'data', 'og', 'cases',
   'about', 'services', 'work', 'contact', 'privacy', 'brand-identity', 'website-design', 'menu-and-print-design',
   'venue-diagnosis', 'monthly-partnership', 'founding-clients'];
 
