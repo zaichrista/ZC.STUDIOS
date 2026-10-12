@@ -203,8 +203,7 @@
 
   /* ---- go ---- */
   const start = () => { fitMark(); idx = Math.round(scrollY / innerHeight); setNav(idx); go(idx, true); draw(); requestAnimationFrame(() => document.body.classList.add("loaded")); };
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
-  // if the kit is slow, don't hold the page hostage
-  setTimeout(() => { if (!document.body.classList.contains('loaded')) start(); }, 2500);
+  // the loading screen (inline in <head>) releases the intro animation once fonts have loaded
+  (window.zcWhenReady || (f => f()))(start);
   document.fonts && document.fonts.load('800 100px "sets-grotesk-l"').then(() => { fitMark(); draw(); });
 })();

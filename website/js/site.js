@@ -2,18 +2,20 @@
 (function () {
   var d = document;
 
-  // gentle reveal on scroll
+  // gentle reveal on scroll (held until the loading screen has finished)
   var els = [].slice.call(d.querySelectorAll('.rv'));
-  if (!('IntersectionObserver' in window)) {
-    els.forEach(function (e) { e.classList.add('in'); });
-  } else {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-      });
-    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
-    els.forEach(function (e) { io.observe(e); });
-  }
+  (window.zcWhenReady || function (f) { f(); })(function () {
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (e) { e.classList.add('in'); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+        });
+      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.05 });
+      els.forEach(function (e) { io.observe(e); });
+    }
+  });
 
   // fit the big wordmark edge to edge (home page only)
   var m = d.querySelector('.mark');
