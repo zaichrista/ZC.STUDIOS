@@ -9,9 +9,6 @@
     c === ' ' ? ' ' : `<span style="--i:${i}">${c}</span>`).join('');
   const tag = $('#tag');
   tag.innerHTML = tag.textContent.split(' ').map((w, i) => `<span class="w"><i style="--i:${i}">${w}</i></span>`).join(' ');
-  $('#cases').innerHTML = [...'cases'].map((c, i) => `<span style="--i:${i}">${c}</span>`).join('');
-  const bio = $('#bio');
-  bio.innerHTML = bio.textContent.split(' ').map((w, i) => `<span class="w" style="--i:${i}">${w}</span>`).join(' ');
   const line = $('#line');
   [...line.childNodes].forEach(n => {
     if (n.nodeType === 3) {
@@ -43,28 +40,24 @@
     pill.style.top = Math.max(tagBottom, (tagBottom + inkTop) / 2 - pill.offsetHeight / 2) + 'px';
   }
 
-  /* ---- scenes: one gesture = one scene ---- */
-  const tracks = { hero: $('#hero'), big: $('#big'), what: $('#what'), work: $('#work'), about: $('#about'), talk: $('#talk') };
-  const order = ['hero', 'big', 'what', 'talk'];   // 'work' and 'about' scenes are hidden on the home page (see .track.off); add them back here to restore
-  const scenes = order.map(k => tracks[k]);
-  const rail = $('#rail');
-  const casesEl = $('#cases'), navEl = $('.nav');
-  const anim = { big: 0, work: 0 };         // time-driven scene animations (0 → 1)
+  /* ---- page chrome: nav + progress rail take the opposite colour of whichever section sits under them ---- */
+  const sections = $$('main > section');
+  const rail = $('#rail'), navEl = $('.nav');
+  const anim = { big: 0 };                  // time-driven animation of the big line (0 → 1)
   const tw = {};                            // running tweens for the above
-  let idx = 0, busy = false, scrolling = false, running = false;
+  let running = false;
 
-  const ease = {
-    inOut: t => t < .5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2,
-    sine:  t => -(Math.cos(Math.PI * t) - 1) / 2,
-    out:   t => 1 - Math.pow(1 - t, 3),
-  };
+  const ease = { sine: t => -(Math.cos(Math.PI * t) - 1) / 2 };
 
   function draw() {
     const vh = innerHeight, mobile = innerWidth <= 720, y = scrollY;
-    // nav + progress rail take the opposite colour of whichever scene sits under them
-    const under = scenes.findLast(t => t.offsetTop <= y + 30) || scenes[0], navCol = under.classList.contains('dark') ? 'var(--paper)' : 'var(--ink)';
+    const under = sections.findLast(t => t.offsetTop <= y + 30) || sections[0];
+    const navCol = under.classList.contains('dark') ? 'var(--paper)' : 'var(--ink)';
     navEl.style.color = navCol; rail.style.background = navCol;
-    rail.style.transform = `scaleX(${y / (scenes[scenes.length - 1].offsetTop || 1)})`;
+    // transparent over the hero; a solid bar in the colour of the section beneath it everywhere else, so it never collides with content
+    navEl.style.background = under === sections[0] ? 'transparent' : (under.classList.contains('dark') ? 'var(--ink)' : 'var(--paper)');
+    rail.style.transform = `scaleX(${clamp(y / (document.documentElement.scrollHeight - vh || 1))})`;
+    $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === under.id));
 
     // hero: wordmark rises and tagline drifts as you leave
     const h = clamp(y / vh);
@@ -80,14 +73,10 @@
     const s = reduce ? 1 : 1 + ((mobile ? .5 : 1.35) * Math.sin(Math.PI * q));
     bigW.style.setProperty('--m', ((s - 1) * bigW.offsetWidth / 2).toFixed(2) + 'px');
     bigW.style.transform = s === 1 ? '' : `scale(${s.toFixed(4)})`;
-
-    // cases: slow push-in once you've landed, never wider than the screen
-    const sMax = Math.min(1.5, .9 * innerWidth / (casesEl.offsetWidth || 1));
-    casesEl.style.setProperty('--s', (1 + (sMax - 1) * anim.work).toFixed(4));
   }
 
   function render(now) {
-    let active = scrolling;
+    let active = false;
     for (const k in tw) {
       const t = tw[k], p = clamp((now - t.t0 - t.delay) / t.dur);
       anim[k] = t.from + (t.to - t.from) * t.ease(reduce ? 1 : p);
@@ -99,62 +88,17 @@
   const kick = () => { if (!running) { running = true; requestAnimationFrame(render); } };
   const play = (k, from, to, dur, delay, e) => { anim[k] = from; tw[k] = { from, to, dur, delay, ease: e, t0: performance.now() }; kick(); };
 
-  /* what each scene does when you land on it */
-  function enter(i) {
-    if (order[i] !== 'work') closeCase();
-    if (order[i] === 'big') play('big', 0, 1, 3000, 500, ease.sine);
-    if (order[i] === 'work') play('work', 0, 1, 6000, 700, ease.out);
-  }
-
-  const setNav = i => $$('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === order[i]));
-  const TOP = i => scenes[i].offsetTop;
-
-  function go(i, instant) {
-    i = Math.max(0, Math.min(scenes.length - 1, i));
-    if (busy && !instant) return;
-    const from = scrollY, to = TOP(i), moved = i !== idx;
-    idx = i; setNav(i);
-    if (moved) enter(i);
-    if (instant || reduce || from === to) { scrollTo(0, to); kick(); return; }
-    busy = scrolling = true; const my = go.id = (go.id || 0) + 1;
-    const dur = 800, t0 = performance.now();
-    // failsafe: if frames stop (background tab, throttling) never leave scrolling locked
-    clearTimeout(go.guard);
-    go.guard = setTimeout(() => { if (busy) { scrollTo(0, to); scrolling = busy = false; kick(); } }, dur + 400);
-    (function step(now) {
-      if (go.id !== my) return;                              // superseded by a newer glide
-      const p = clamp((now - t0) / dur);
-      scrollTo(0, from + (to - from) * ease.inOut(p));
-      if (p < 1) return requestAnimationFrame(step);
-      scrolling = false; busy = false;
-      kick();
-    })(t0);
-    kick();
-  }
-
-  /* normal scrolling: the scene is whichever screen you're on; entrances fire as you arrive */
-  addEventListener('scroll', () => {
-    const i = clamp(Math.round(scrollY / innerHeight), 0, scenes.length - 1);
-    if (i !== idx) { idx = i; setNav(i); enter(i); }
-    kick();
-  }, { passive: true });
-
-  /* pills jump to their scene */
-  $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
-    const i = order.indexOf(a.getAttribute('href').slice(1));
-    if (i < 0) return;
-    e.preventDefault();
-    scrollTo({ top: TOP(i), behavior: reduce ? 'auto' : 'smooth' });
-  }));
-
+  addEventListener('scroll', kick, { passive: true });
   addEventListener('resize', () => { fitMark(); draw(); });
 
-  /* scene entrances: replay every time you land */
+  /* the big line plays each time you land on it; every later section fades up once */
+  new IntersectionObserver(es => es.forEach(e => {
+    if (e.intersectionRatio >= .5) play('big', 0, 1, 3000, 500, ease.sine);
+  }), { threshold: [.5] }).observe($('#big'));
   const io = new IntersectionObserver(es => es.forEach(e => {
-    if (e.intersectionRatio >= .35) e.target.classList.add('in');
-    else if (e.intersectionRatio === 0) e.target.classList.remove('in');
-  }), { threshold: [0, .35] });
-  ['what', 'work', 'about', 'talk'].forEach(k => io.observe(tracks[k]));
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: .12 });
+  $$('.hm').forEach(s => io.observe(s));
 
   /* ---- magnetic pills / links ---- */
   if (!reduce && matchMedia('(hover:hover)').matches) {
@@ -167,42 +111,16 @@
     });
   }
 
-  /* ---- cases: float around the headline, click to open the write-up ---- */
-  // case-study copy lives in data/cases.json (edit it there)
-  let CASES = {};
-  fetch('/data/cases.json').then(r => r.json()).then(d => { CASES = d; }).catch(() => {});
-  const work = tracks.work, copy = $('#copy'), cards = $$('#work .case');
-  function openCase(k) {
-    const c = CASES[k];
-    if (!c) return;
-    cards.forEach(el => el.classList.toggle('sel', el.dataset.case === k));
-    copy.innerHTML = `<h3>${c.name}</h3><p class="kind">${c.kind}</p><dl>${c.rows.map(r => `<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl><p class="acts"><a class="full" href="${cards.find(el => el.dataset.case === k).href}">read the full case</a><button class="close" type="button">← back</button></p>`;
-    $('.close', copy).addEventListener('click', closeCase);
-    work.dataset.sel = k;
-    work.classList.add('open');
-  }
-  function closeCase() { work.classList.remove('open'); cards.forEach(el => el.classList.remove('sel')); }
-  cards.forEach(el => el.addEventListener('click', e => {
+  /* ---- smooth jump to in-page sections ---- */
+  $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    const t = $(a.getAttribute('href'));
+    if (!t) return;
     e.preventDefault();
-    if (el.classList.contains('sel')) return;
-    openCase(el.dataset.case);
+    scrollTo({ top: t.offsetTop, behavior: reduce ? 'auto' : 'smooth' });
   }));
-  addEventListener('keydown', e => { if (e.key === 'Escape') closeCase(); });
-  // same magnetic hover as the pills (not on the big, open card)
-  if (!reduce && matchMedia('(hover:hover)').matches) {
-    cards.forEach(el => {
-      const m = $('.mag', el);
-      el.addEventListener('pointermove', e => {
-        if (el.classList.contains('sel')) return;
-        const r = el.getBoundingClientRect();
-        m.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .22}px, ${(e.clientY - r.top - r.height / 2) * .35}px)`;
-      });
-      el.addEventListener('pointerleave', () => m.style.transform = '');
-    });
-  }
 
   /* ---- go ---- */
-  const start = () => { fitMark(); idx = Math.round(scrollY / innerHeight); setNav(idx); go(idx, true); draw(); requestAnimationFrame(() => document.body.classList.add("loaded")); };
+  const start = () => { fitMark(); draw(); requestAnimationFrame(() => document.body.classList.add("loaded")); };
   // the loading screen (inline in <head>) releases the intro animation once fonts have loaded
   (window.zcWhenReady || (f => f()))(start);
   document.fonts && document.fonts.load('800 100px "sets-grotesk-l"').then(() => { fitMark(); draw(); });
